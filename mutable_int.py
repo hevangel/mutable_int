@@ -75,15 +75,16 @@ class MutableInt(MutableIntBase, int):
         return iter([int(self)])
 
     def set(self, val):
-        assert enable_MutableInt, "MutableInt is disabled"
         # Copy the raw memory value of the integer in PyObject C data structure
+
+        assert enable_MutableInt, "MutableInt is disabled"
 
         # Check the new value is a integer type
         assert isinstance(val, int), "new value is not an int"
 
         # Check the new value is smaller than the maxval (pre-allocated memory size)
-        assert val >= 0, "MutableInt does not support negative number"
-        assert val < self.maxval, "new value is larger than the preallocated memory size"
+        #assert val >= 0, "MutableInt does not support negative number"
+        assert abs(val) < self.maxval, "new value is larger than the preallocated memory size"
 
         self.val = val
         mutable_int_utils.copy_int(self, val)

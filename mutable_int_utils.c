@@ -34,6 +34,15 @@ static PyObject* copy_int(PyObject* self, PyObject* args)
                 lobj0->ob_digit[i] = 0;
             }
         }
+        if (vobj1->ob_size < 0) {
+            if (vobj0->ob_size > 0) {
+                vobj0->ob_size = -vobj0->ob_size;
+            }
+        } else {
+            if (vobj0->ob_size < 0) {
+                vobj0->ob_size = -vobj0->ob_size;
+            }
+        }
     }
     
     return Py_None;
