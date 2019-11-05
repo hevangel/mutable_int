@@ -1,114 +1,97 @@
-import sys
 import ctypes
+try:
+    import mutable_int_utils
+except:
+    print("Warning: Unable to Import mutable_int_utils, please run setup_mutable_int_utils.py")
 
-def get_raw(obj, s = None):
-    if (s is None):
-        s = str(obj)
-    print('get_raw(',s,'): id()', id(obj));
-    print('int()', int(obj))
-    print('str()', str(obj))
-    print('repr()', repr(obj))
-    print('getsizeof:', sys.getsizeof(obj))
-    print('hash:', hash(obj))
-    ob_size = ctypes.c_short.from_address(id(obj)+16)
-    print('ob_size:', ob_size.value)
-    for i in range(abs(ob_size.value)):
-        ob_digit = ctypes.c_long.from_address(id(obj)+24+i*4)
-        digit = int(ob_digit.value) & 0x3FFFFFFF
-        print('ob_digi[', i,']', hex(digit))
+enable_MutableInt = True
 
 class MutableIntBase():
-    """ Base class of mutable integer type to override the hash() function"""
+    """
+    Base class for mutlable int object
+    Need to seperate the __new__ in a base class to workaround the limitation initial memory allocation of Python object
+    So it won't point to the preallocated int object in range -5 to 255
+    """
     def __new__(cls, val, maxval=0xFFFFFFFF):
-        return int.__new__(cls, maxval)
+        if enable_MutableInt:
+            return int.__new__(cls, maxval)
+        else:
+            return int.__new__(cls, val)
 
-    def __init__(self, val = 0):
-        self._val = val
-
-    #def __int__(self):
-    #    return self._val
-
-    #def __index__(self):
-    #    return self._val
-
-    #def __str__(self):
-    #    return str(self._val)
-
-    #def __repr__(self):
-    #    return repr(self._val)
-
-    #def __iter__(self):
-    #    return iter([self])
-
-
-#class MutableInt(int):
 class MutableInt(MutableIntBase, int):
-    """ Mutable integer type"""
+    """
+    Mutable int object
+    Python int type is immutable (i.e., its value can't be chagne once the object is created)
+    Python allocate memory required for the int object for each integer value exactly once per number.
+    Integer from -5 to 255 is already preallocated and all new instances merely point to the exsiting int objects
+
+    Python int is stored in the following formart in the memory
+    PyObject->ob_size (2 bytes) - stores the number of the digits in the integer.
+        ob_size = 0 means int is zero
+        ob_size < 0 means the int is a negative number
+    PyObject->ob_digit[n] (n bytes) - stores the digits of the integer number.
+        each digit only has 30 bits.
+        so for example a 32 bits integer has 2 digits
+
+    Since the memory of the int object is allocated when the object is created,
+    we need to pre-allocate enough ob_digit[n] to support the maximum value (the maxval argument)
+
+    For some reason, I can't set the mutable integer value to negative number.
+    It should work but Python segfault everytime it try to do arithmic operation on a negative number
+    Just make it illegal to assign negative value for now, we don't need negative value in G5SW
+    """
 
     def __init__(self, val, maxval=0xFFFFFFFF):
-        self.maxval = maxval
-        print('--- val: ', val, '---')
-        self.set(val)
+        # keep track of the maximum value supported by the pre-allocated memory size
+        if enable_MutableInt:
+            self.maxval = maxval
+            self.set(val)
+
+    def __int__(self):
+        # Return a normal int object
+        if enable_MutableInt:
+            return self.val
+        else:
+            return self
+
+    def __index__(self):
+        # Return a normal int object
+        return int(self)
 
     def __hash__(self):
-        return id(self)
+        # use the memory address as the hash value
+        # so it won't get confuse with hash value of int type (which is the integer number)
+        return int(self)
+
+    def __eq__(self, other):
+        # Compare using the nomral int object
+        if enable_MutableInt:
+            return int(self) == other
+        else:
+            return super(int).__eq__(other)
 
     def __iter__(self):
-        return iter([self])
+        # make the MutableInt object iterable as well, for convinience
+        return iter([int(self)])
 
     def set(self, val):
-        # Copy the raw memory value of the integer from the C data structure
-        get_raw(self);
-        get_raw(val);
+        assert enable_MutableInt, "MutableInt is disabled"
+        # Copy the raw memory value of the integer in PyObject C data structure
 
         # Check the new value is a integer type
-        assert isinstance(val, int)
+        assert isinstance(val, int), "new value is not an int"
 
         # Check the new value is smaller than the maxval (pre-allocated memory size)
-        assert val < self.maxval
+        assert val >= 0, "MutableInt does not support negative number"
+        assert val < self.maxval, "new value is larger than the preallocated memory size"
 
-        # PyVarObject->ob_size
-        val_ob_size_ushort = ctypes.c_ushort.from_address(id(val)+16)
-        val_ob_size = ctypes.c_short.from_address(id(val)+16)
-        val_ob_digit0 = ctypes.c_uint.from_address(id(val)+24)
-        val_ob_digit1 = ctypes.c_uint.from_address(id(val)+24+4)
-        self_ob_size = ctypes.c_short.from_address(id(self)+16)
-        self_ob_size_ushort = ctypes.c_ushort.from_address(id(self)+16)
-        self_ob_digit0 = ctypes.c_uint.from_address(id(self)+24)
-        self_ob_digit1 = ctypes.c_uint.from_address(id(self)+24+4)
+        self.val = val
+        mutable_int_utils.copy_int(self, val)
 
-        if val_ob_size.value == 0:
-            self_ob_size.value = 0
-            self_ob_digit = ctypes.c_long.from_address(id(self)+24)
-            self_ob_digit.value = 0
-        else:
-            if val_ob_size.value < 0:
-                self_ob_size_ushort.value = val_ob_size_ushort.value
-            #    self_ob_size_ushort.value = 65535 
-            #else:
-            #    self_ob_size.value = val_ob_size.value;
-            #self_ob_size.value = 1
-            
-            count = abs(self_ob_size.value)
-            print("count:", count)
 
-            # PyLongObject->ob_digit
-            if count != 0:
-                count = 2
-                ctypes.memmove(id(self)+24, id(val)+24, (count*4))
-            #self_ob_digit0.value = 200
-            #self_ob_digit1.value = 0
 
-        print('val ob_size ushort:', val_ob_size_ushort.value)
-        print('val ob_size:', val_ob_size.value)
-        print('val ob_digit[0]:', hex(val_ob_digit0.value))
-        print('val ob_digit[1]:', hex(val_ob_digit1.value))
-        print('self ob_size ushort:', self_ob_size_ushort.value)
-        print('self ob_size:', self_ob_size.value)
-        print('self ob_digit[0]:', hex(self_ob_digit0.value))
-        print('self ob_digit[1]:', hex(self_ob_digit1.value))
- 
-class MyInt(MutableInt):
-    pass
+
+
+
 
 
