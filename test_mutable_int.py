@@ -104,6 +104,12 @@ class TestMutableInt(unittest.TestCase):
         self.assertNotEqual(id(a), id(y))
         self.assertEqual(a, y)
 
+        y.set(8773)
+        b = copy.deepcopy(y)
+        self.assertNotEqual(id(b), id(y))
+        self.assertEqual(b, y)
+        self.assertNotEqual(a, y)
+
 
 if __name__ == '__main__':
     unittest.main()
