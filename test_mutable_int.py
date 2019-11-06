@@ -100,15 +100,20 @@ class TestMutableInt(unittest.TestCase):
 
     def test_copy(self):
         y = MutableInt(1214)
-        a = copy.copy(y)
-        self.assertNotEqual(id(a), id(y))
-        self.assertEqual(a, y)
+        y.x = MutableInt(999)
 
-        y.set(8773)
+        a = copy.copy(y)
+        self.assertEqual(a, y)
+        self.assertNotEqual(id(a), id(y))
+        self.assertEqual(id(a.x), id(y.x))
+
+        y.set(2451)
         b = copy.deepcopy(y)
-        self.assertNotEqual(id(b), id(y))
         self.assertEqual(b, y)
-        self.assertNotEqual(a, y)
+        self.assertNotEqual(a, b)
+        self.assertNotEqual(id(b), id(y))
+        self.assertNotEqual(id(b.x), id(y.x))
+
 
 
 if __name__ == '__main__':

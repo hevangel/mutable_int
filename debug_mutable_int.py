@@ -2,11 +2,12 @@ import pprint
 import mutable_int_utils
 from mutable_int import *
 
-x = 0
-hex(x)
-
-y = MutableInt(0)
-hex(y)
+import copy
+y = MutableInt(1234)
+y.abc = 'hello'
+a = copy.copy(y)
+a.abc
+a
 
 #print(hex(y))
 #print(hex(6))

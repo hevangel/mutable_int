@@ -78,16 +78,25 @@ class MutableInt(MutableIntBase, int):
             return super(int).__eq__(other)
 
     def __iter__(self):
-        """make the MutableInt object iterable as well, for convinience"""
+        """make the MutableInt object iterable as well, for convenience"""
         return iter([int(self)])
 
     def __copy__(self):
-        """Overwrite the builtin copy()"""
-        return type(self)(self.val)
+        """need special version of copy()"""
+        cls = self.__class__
+        result = cls(self.val, self.maxval)
+        result.__dict__.update(self.__dict__)
+        return result
 
     def __deepcopy__(self, memo):
-        """Overwrite the builtin deepcopy()"""
-        return type(self)(self.val)
+        """need special version of deepcopy()"""
+        cls = self.__class__
+        result = cls(self.val, self.maxval)
+        result.__dict__.update(self.__dict__)
+        memo[id(self)] = result
+        for k, v in self.__dict__.items():
+            setattr(result, k, copy.deepcopy(v, memo))
+        return result
 
     def set(self, val):
         """Copy the raw memory value of the integer in PyObject C data structure"""
