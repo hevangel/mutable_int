@@ -30,14 +30,17 @@ static PyObject* copy_int(PyObject* self, PyObject* args)
         }
     } else {
 	    vobj0->ob_size = vobj1->ob_size;
-        // for(i = 0; i < abs(Py_SIZE(obj0)); i++) {
         for(i = 0; i < abs(Py_SIZE(obj1)); i++) {
-            if (i < abs(Py_SIZE(obj1))) {
-                lobj0->ob_digit[i] = lobj1->ob_digit[i];
-            } else {
-                lobj0->ob_digit[i] = 0;
-            }
+            lobj0->ob_digit[i] = lobj1->ob_digit[i];
         }
+        
+        // for(i = 0; i < abs(Py_SIZE(obj0)); i++) {
+        //    if (i < abs(Py_SIZE(obj1))) {
+        //        lobj0->ob_digit[i] = lobj1->ob_digit[i];
+        //    } else {
+        //        lobj0->ob_digit[i] = 0;
+        //    }
+        //}
     }
     
     return Py_None;

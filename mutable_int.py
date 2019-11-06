@@ -1,11 +1,9 @@
+import copy
 import ctypes
 try:
     import mutable_int_utils
 except:
     print("Warning: Unable to Import mutable_int_utils, please run setup_mutable_int_utils.py")
-
-enable_MutableInt = True
-use_id_for_hash = False
 
 class MutableIntBase():
     """
@@ -13,8 +11,10 @@ class MutableIntBase():
     Need to seperate the __new__ in a base class to workaround the limitation initial memory allocation of Python object
     So it won't point to the preallocated int object in range -5 to 255
     """
+    enable_MutableInt = True
+
     def __new__(cls, val, maxval=0xFFFFFFFF):
-        if enable_MutableInt:
+        if cls.enable_MutableInt:
             return int.__new__(cls, maxval)
         else:
             return int.__new__(cls, val)
@@ -42,25 +42,27 @@ class MutableInt(MutableIntBase, int):
     Just make it illegal to assign negative value for now, we don't need negative value in G5SW
     """
 
+    use_id_for_hash = False
+
     def __init__(self, val, maxval=0xFFFFFFFF):
-        # keep track of the maximum value supported by the pre-allocated memory size
-        if enable_MutableInt:
+        """keep track of the maximum value supported by the pre-allocated memory size"""
+        if type(self).enable_MutableInt:
             self.maxval = maxval
             self.set(val)
 
     def __int__(self):
-        # Return a normal int object
-        if enable_MutableInt:
+        """Return a normal int object"""
+        if type(self).enable_MutableInt:
             return self.val
         else:
             return self
 
     def __index__(self):
-        # Return a normal int object
+        """Return a normal int object"""
         return int(self)
 
     def __hash__(self):
-        if use_id_for_hash:
+        if type(self).use_id_for_hash:
             # use the memory address as the hash value
             # so it won't get confuse with hash value of int type (which is the integer number)
             return id(self)
@@ -69,20 +71,28 @@ class MutableInt(MutableIntBase, int):
             return int(self)
 
     def __eq__(self, other):
-        # Compare using the nomral int object
-        if enable_MutableInt:
+        """Compare using the nomral int object"""
+        if type(self).enable_MutableInt:
             return int(self) == other
         else:
             return super(int).__eq__(other)
 
     def __iter__(self):
-        # make the MutableInt object iterable as well, for convinience
+        """make the MutableInt object iterable as well, for convinience"""
         return iter([int(self)])
 
-    def set(self, val):
-        # Copy the raw memory value of the integer in PyObject C data structure
+    def __copy__(self):
+        """Overwrite the builtin copy()"""
+        return type(self)(self.val)
 
-        assert enable_MutableInt, "MutableInt is disabled"
+    def __deepcopy__(self, memo):
+        """Overwrite the builtin deepcopy()"""
+        return type(self)(self.val)
+
+    def set(self, val):
+        """Copy the raw memory value of the integer in PyObject C data structure"""
+
+        assert type(self).enable_MutableInt, "MutableInt is disabled"
 
         # Check the new value is a integer type
         assert isinstance(val, int), "new value is not an int"

@@ -2,6 +2,7 @@ import unittest
 import mutable_int
 from mutable_int import *
 import pprint
+import copy
 
 class TestMutableInt(unittest.TestCase):
 
@@ -69,8 +70,8 @@ class TestMutableInt(unittest.TestCase):
         self.assertEqual(hex(y), hex(x))
         self.assertEqual(str(x), str(y))
         self.assertEqual(str(y), str(x))
-        self.assertTrue(int(y) is x)
-        self.assertTrue(x is int(y))
+        self.assertIs(int(y), x)
+        self.assertIs(x, int(y))
 
     def test_dict(self):
         d = {}
@@ -85,7 +86,7 @@ class TestMutableInt(unittest.TestCase):
         d[y] = 'python'
         self.assertEqual('python', d[151])
 
-        mutable_int.use_id_for_hash = True
+        MutableInt.use_id_for_hash = True
 
         with self.assertRaises(KeyError):
             d[y]
@@ -95,9 +96,13 @@ class TestMutableInt(unittest.TestCase):
         x.set(1001)
         self.assertEqual('pycon', d[x])
 
-        mutable_int.use_id_for_hash = True
+        MutableInt.use_id_for_hash = False
 
-
+    def test_copy(self):
+        y = MutableInt(1214)
+        a = copy.copy(y)
+        self.assertNotEqual(id(a), id(y))
+        self.assertEqual(a, y)
 
 
 if __name__ == '__main__':
