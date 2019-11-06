@@ -5,6 +5,7 @@ except:
     print("Warning: Unable to Import mutable_int_utils, please run setup_mutable_int_utils.py")
 
 enable_MutableInt = True
+use_id_for_hash = False
 
 class MutableIntBase():
     """
@@ -59,9 +60,13 @@ class MutableInt(MutableIntBase, int):
         return int(self)
 
     def __hash__(self):
-        # use the memory address as the hash value
-        # so it won't get confuse with hash value of int type (which is the integer number)
-        return int(self)
+        if use_id_for_hash:
+            # use the memory address as the hash value
+            # so it won't get confuse with hash value of int type (which is the integer number)
+            return id(self)
+        else:
+            # use the integer value as the hash value
+            return int(self)
 
     def __eq__(self, other):
         # Compare using the nomral int object
@@ -83,10 +88,12 @@ class MutableInt(MutableIntBase, int):
         assert isinstance(val, int), "new value is not an int"
 
         # Check the new value is smaller than the maxval (pre-allocated memory size)
-        #assert val >= 0, "MutableInt does not support negative number"
         assert abs(val) < self.maxval, "new value is larger than the preallocated memory size"
 
         self.val = val
+        if val == 0:
+            # zero is a special case, need to reset the ob_size
+            mutable_int_utils.copy_int(self, self.maxval)
         mutable_int_utils.copy_int(self, val)
 
 
