@@ -1,9 +1,6 @@
 import copy
 import ctypes
-try:
-    import mutable_int_utils
-except:
-    print("Warning: Unable to Import mutable_int_utils, please run setup_mutable_int_utils.py")
+import _mutable_int
 
 class MutableIntBase():
     """
@@ -112,8 +109,8 @@ class MutableInt(MutableIntBase, int):
         self.val = val
         if val == 0:
             # zero is a special case, need to reset the ob_size
-            mutable_int_utils.copy_int(self, self.maxval)
-        mutable_int_utils.copy_int(self, val)
+            _mutable_int.copy_int(self, self.maxval)
+        _mutable_int.copy_int(self, val)
 
 
 

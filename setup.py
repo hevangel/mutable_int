@@ -1,10 +1,9 @@
-import setuptools
-from distutils.core import Extension
+from setuptools import setup, find_packages, Extension
 
 with open("README.md", "r") as fh:
     long_description = fh.read()
 
-setuptools.setup(
+setup(
     name="mutable_int-hevangel", # Replace with your own username
     version="0.0.3",
     author="Horace Chan",
@@ -13,12 +12,12 @@ setuptools.setup(
     long_description=long_description,
     long_description_content_type="text/markdown",
     url="https://github.com/hevangel/mutable_int",
-    packages=setuptools.find_packages(),
+    packages=find_packages(),
     classifiers=[
         "Programming Language :: Python :: 3",
         "License :: OSI Approved :: MIT License",
         "Operating System :: OS Independent",
     ],
     python_requires='>=3.5',
-    ext_modules = [Extension('mutable_int_utils', ['mutable_int_utils.c'])]
+    ext_modules = [Extension('_mutable_int', ['_mutable_int.c'])]
 )

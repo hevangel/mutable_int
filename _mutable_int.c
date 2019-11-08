@@ -29,18 +29,10 @@ static PyObject* copy_int(PyObject* self, PyObject* args)
             lobj0->ob_digit[i] = 0;
         }
     } else {
-	    vobj0->ob_size = vobj1->ob_size;
+        vobj0->ob_size = vobj1->ob_size;
         for(i = 0; i < abs(Py_SIZE(obj1)); i++) {
             lobj0->ob_digit[i] = lobj1->ob_digit[i];
         }
-        
-        // for(i = 0; i < abs(Py_SIZE(obj0)); i++) {
-        //    if (i < abs(Py_SIZE(obj1))) {
-        //        lobj0->ob_digit[i] = lobj1->ob_digit[i];
-        //    } else {
-        //        lobj0->ob_digit[i] = 0;
-        //    }
-        //}
     }
     
     return Py_None;
@@ -100,14 +92,14 @@ static PyMethodDef myMethods[] = {
 // Our Module Definition struct
 static struct PyModuleDef myModule = {
     PyModuleDef_HEAD_INIT,
-    "mutable_int_utils",
+    "_mutable_int",
     "Mutable int util functions",
     -1,
     myMethods
 };
 
 // Initializes our module using our above struct
-PyMODINIT_FUNC PyInit_mutable_int_utils(void)
+PyMODINIT_FUNC PyInit__mutable_int(void)
 {
     return PyModule_Create(&myModule);
 }
