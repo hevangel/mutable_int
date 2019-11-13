@@ -12,11 +12,14 @@ The mutable integer object feels like an int, works like an int, it even works e
 from mutableint import MutableInt
 
 # create a mutable integer with value 10 
-a = MutableInt(10)
+foo = MutableInt(10)
 
-# change the value of a to 11
-a.set(11)
+# change the value of foo to 11
+foo.set(11)
 ```
+
+## Details
+TODO
 
 ## Development
 
