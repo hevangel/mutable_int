@@ -3,8 +3,8 @@
 ## Install
 > 'pip install mutableint'
 
-This package is a proof of concept implemenation of a mutable integer object for Python.
-The mutable integer class is a sub-class of the built-in int class.   
+This package is a proof of concept implemenation of a mutable integer object for Python.  The mutable integer class is a sub-class of the built-in int class.   
+
 The mutable integer object feels like an int, works like an int, it even works exactly like an int when the Python object is passed into C code via SWIG
 
 ## Usage
