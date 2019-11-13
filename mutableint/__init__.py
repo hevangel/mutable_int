@@ -1,6 +1,5 @@
 import copy
-import ctypes
-import _mutable_int
+import _mutableint
 
 class MutableIntBase():
     """

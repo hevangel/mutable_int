@@ -1,6 +1,5 @@
 import unittest
-import mutable_int
-from mutable_int import *
+from mutableint import *
 import pprint
 import copy
 
