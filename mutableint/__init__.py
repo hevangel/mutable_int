@@ -108,8 +108,8 @@ class MutableInt(MutableIntBase, int):
         self.val = val
         if val == 0:
             # zero is a special case, need to reset the ob_size
-            _mutable_int.copy_int(self, self.maxval)
-        _mutable_int.copy_int(self, val)
+            _mutableint.copy_int(self, self.maxval)
+        _mutableint.copy_int(self, val)
 
 
 

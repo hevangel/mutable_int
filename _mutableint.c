@@ -92,14 +92,14 @@ static PyMethodDef myMethods[] = {
 // Our Module Definition struct
 static struct PyModuleDef myModule = {
     PyModuleDef_HEAD_INIT,
-    "_mutable_int",
-    "Mutable int util functions",
+    "_mutableint",
+    "Mutable Integer package util functions",
     -1,
     myMethods
 };
 
 // Initializes our module using our above struct
-PyMODINIT_FUNC PyInit__mutable_int(void)
+PyMODINIT_FUNC PyInit__mutableint(void)
 {
     return PyModule_Create(&myModule);
 }

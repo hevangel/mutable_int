@@ -1,8 +1,6 @@
 import pprint
-import mutable_int_utils
-from mutable_int import *
+from mutableint import *
 
-import copy
 y = MutableInt(1234)
 y.abc = 'hello'
 a = copy.copy(y)
