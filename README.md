@@ -25,7 +25,7 @@ TODO
 
 Install and compile the package locally
 
-> 'python setup install'
+> 'python setup.py install'
 
 Run the unit tests
 
