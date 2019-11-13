@@ -4,8 +4,9 @@ with open("README.md", "r") as fh:
     long_description = fh.read()
 
 setup(
-    name="mutableint-hevangel", # Replace with your own username
-    version="0.0.6",
+    #name="mutableint-hevangel", 
+    name="mutableint", 
+    version="0.2",
     author="Horace Chan",
     author_email="git@horace.org",
     description="Mutable Integer package, a subclass of int",
