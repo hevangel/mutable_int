@@ -18,7 +18,7 @@ foo = MutableInt(10)
 foo.set(11)
 ```
 
-## Details
+## Implementation Details
 TODO
 
 ## Development
