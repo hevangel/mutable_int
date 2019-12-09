@@ -29,7 +29,7 @@ print(foo, bar)
 >11 11
 ```
 
-## Details
+## Implementation Details
 TODO
 
 ## Development
