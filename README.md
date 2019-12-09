@@ -14,8 +14,19 @@ from mutableint import MutableInt
 # create a mutable integer with value 10 
 foo = MutableInt(10)
 
+# check type
+isinstance(foo,int)
+>True
+
+# copy the variable
+bar = foo
+
 # change the value of foo to 11
 foo.set(11)
+
+# check both variables are updated
+print(foo, bar)
+>11 11
 ```
 
 ## Details
