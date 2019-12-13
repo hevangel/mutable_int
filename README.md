@@ -35,7 +35,7 @@ Python int type is immutable (i.e., its value can't be chagne once the object is
 Python allocate memory required for the int object for each integer value exactly once per number.
 Integer from -5 to 255 is already preallocated and all new instances merely point to the exsiting int objects
 
-Python int is stored in the following formart in the memory
+Python int is stored in the following format in the memory
 - PyObject->ob_size (2 bytes) - stores the number of the digits in the integer.
   - ob_size = 0 means int is zero
   - ob_size < 0 means the int is a negative number
